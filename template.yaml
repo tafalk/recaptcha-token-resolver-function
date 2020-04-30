@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: This template deploys Recaptcha V3 Resolver Function
+Parameters:
+  FunctionName:
+    Type: String
+  Environment:
+    Type: String
+    Default: dev
+  Application:
+    Type: String
+  RecaptchaSecretName:
+    Type: String
+  RecaptchaVerifyEndpoint:
+    Type: String
+Resources:
+  PlaceGetterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref FunctionName
+      CodeUri: ./
+      Handler: "lambda_function.lambda_handler"
+      Environment:
+        Variables:
+          RECAPTCHA_SECRET_NAME: !Ref RecaptchaSecretName
+          RECAPTCHA_VERIFY_ENDPOINT: !Ref RecaptchaVerifyEndpoint
+      MemorySize: 128
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "logs:*"
+                - "dynamodb:*"
+              Resource: "*"
+      Runtime: python3.8
+      Timeout: 3
+      Tags:
+        Environment: !Ref Environment
+        Application: !Ref Application
